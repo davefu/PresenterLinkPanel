@@ -14,9 +14,7 @@ use Nette\Templating;
 use Nette;
 use Nette\Utils\Html;
 
-class PresenterLinkPanel extends Nette\Object implements Diagnostics\IBarPanel {
-
-    private $presenter;
+class Panel extends Nette\Object implements Diagnostics\IBarPanel {
 
     const ACTIVE = 1;
     const PARENTS = 2;
