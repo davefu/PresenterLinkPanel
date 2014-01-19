@@ -16,7 +16,7 @@ class PresenterLinkExtension extends DI\CompilerExtension {
             $initialize = $class->methods['initialize'];
 
             $initialize->addBody($container->formatPhp(
-                'Nette\Diagnostics\Debugger::'.(method_exists('Nette\Diagnostics\Debugger', 'getBar') ? 'getBar()' : '$bar').'->addPanel(?);',
+                'Nette\Diagnostics\Debugger::'.(method_exists('Nette\Diagnostics\Debugger', 'getBar') ? 'getBar()' : '$bar').'->addPanel(?, "presenter-link-panel");',
                     Nette\DI\Compiler::filterArguments(array(
                         new DI\Statement('PresenterLink\Panel', [
                             'appDir' => $container->parameters['appDir'],

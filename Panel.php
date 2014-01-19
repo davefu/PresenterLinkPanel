@@ -39,10 +39,6 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         return $this->application->getPresenter();
     }
 
-    public function getId() {
-        return "presenter-link-panel";
-    }
-
     public function getTab() {
         $method = $this->getActionMethodReflection();
         if ($method === NULL) {
