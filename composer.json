@@ -1,5 +1,5 @@
 {
-    "name": "Quinix/presenter-link-panel",
+    "name": "quinix/presenter-link-panel",
     "description": "This panel generates links to open current presenter/template into your preferred text editor. (Author: Daniel Robenek)",
     "keywords": ["nette", "debugging", "presenter", "component"],
     "licence" : ["MIT"],
@@ -19,6 +19,6 @@
         "nette/nette": "~2.1"
     },
     "autoload": {
-        "psr-4": {"PresenterLink": "./"}
+        "psr-4": {"PresenterLink\\": "./"}
     }
 }
