@@ -5,39 +5,40 @@
  * @license MIT
  */
 
-namespace DebugPanel;
+namespace PresenterLink;
 
-use Nette\Application\UI\Presenter;
-use Nette\Diagnostics\Debugger;
-use Nette\Diagnostics\IBarPanel;
-use Nette\Latte\Engine as LatteFilter;
-use Nette\Object;
-use Nette\Reflection\ClassType as ClassReflection;
-use Nette\Reflection\Method as MethodReflection;
-use Nette\Templating\FileTemplate;
-use Nette\Templating\IFileTemplate;
+use Nette\Diagnostics;
+use Nette\Latte\Engine;
+use Nette\Reflection;
+use Nette\Templating;
+use Nette;
 use Nette\Utils\Html;
 
-class PresenterLinkPanel extends Object implements IBarPanel {
+class PresenterLinkPanel extends Nette\Object implements Diagnostics\IBarPanel {
 
-    /** @var Presenter */
     private $presenter;
 
     const ACTIVE = 1;
     const PARENTS = 2;
     const BOTH = 3;
+    /** @var Nette\Application\Application */
+    private $application;
+    /** @var \Nette\Latte\Engine */
+    private $latte;
+    /** @var string  */
+    private $appDir;
 
-    function __construct(Presenter $presenter) {
-        $this->presenter = $presenter;
-        Debugger::addPanel($this);
+    public function __construct($appDir, Nette\Application\Application $application, Engine $latte) {
+        $this->application = $application;
+        $this->latte = $latte;
+        $this->appDir = $appDir;
     }
 
-    public function getPresenter() {
-        return $this->presenter;
-    }
-
-    protected function getAppDir() {
-        return $this->getPresenter()->getContext()->params["appDir"];
+    /**
+     * @return Nette\Application\UI\Presenter
+     */
+    private function getPresenter() {
+        return $this->application->getPresenter();
     }
 
     public function getId() {
@@ -46,8 +47,9 @@ class PresenterLinkPanel extends Object implements IBarPanel {
 
     public function getTab() {
         $method = $this->getActionMethodReflection();
-        if ($method === NULL)
+        if ($method === NULL) {
             $method = $this->getRenderMethodReflection();
+        }
         $presenter = self::getEditorLink($this->getPresenter()->getReflection()->getFileName(), $method === NULL ? $this->getPresenter()->getReflection()->getStartLine() : $method->getStartLine());
         $template = self::getEditorLink($this->getTemplateFileName());
 
@@ -70,16 +72,17 @@ class PresenterLinkPanel extends Object implements IBarPanel {
 
 
     public function getPanel() {
-        $template = new FileTemplate(dirname(__FILE__) . '/template.latte');
-        $template->registerFilter(new LatteFilter());
+        $template = new Templating\FileTemplate(dirname(__FILE__) . '/template/template.latte');
+        $template->registerFilter($this->latte);
         $template->registerHelper("editorLink", callback(__CLASS__, "getEditorLink"));
         $template->registerHelper("substr", "substr");
+        $template->registerHelperLoader('Nette\\Templating\\Helpers::loader');
 
         $template->presenterClass = $this->getPresenter()->getReflection();
         $template->actionName = $this->getPresenter()->getAction(TRUE);
         $template->templateFileName = $this->getTemplateFileName();
         $template->layoutFileName = $this->getLayoutFileName();
-        $template->appDirPathLength = strlen(realpath($this->getAppDir()));
+        $template->appDirPathLength = strlen(realpath($this->appDir));
 
 
         $template->interestedMethods = $this->getInterestedMethodReflections();
@@ -106,7 +109,7 @@ class PresenterLinkPanel extends Object implements IBarPanel {
     private function getTemplateFileName() {
         $template = $this->getPresenter()->getTemplate();
         $templateFile = $template->getFile();
-        if ($template instanceof IFileTemplate && !$template->getFile()) {
+        if ($template instanceof Templating\IFileTemplate && !$template->getFile()) {
             $files = $this->getPresenter()->formatTemplateFiles();
             foreach ($files as $file) {
                 if (is_file($file)) {
@@ -115,7 +118,7 @@ class PresenterLinkPanel extends Object implements IBarPanel {
                 }
             }
             if (!$templateFile)
-                $templateFile = str_replace($this->getAppDir(), "\xE2\x80\xA6", reset($files));
+                $templateFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
         }
         if ($templateFile !== NULL)
             $templateFile = realpath($templateFile);
@@ -134,7 +137,7 @@ class PresenterLinkPanel extends Object implements IBarPanel {
                 }
             }
             if (!$layoutFile)
-                $layoutFile = str_replace($this->getAppDir(), "\xE2\x80\xA6", reset($files));
+                $layoutFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
         }
         if ($layoutFile !== NULL)
             $layoutFile = realpath($layoutFile);
@@ -169,7 +172,7 @@ class PresenterLinkPanel extends Object implements IBarPanel {
         $interestedMethods = $this->getInterestedMethodNames();
         $parents = array();
         $cr = $this->getPresenter()->getReflection()->getParentClass();
-        while ($cr !== NULL && $cr->getName() != "Presenter" && $cr->getName() != "Nette\Application\UI\Presenter") {
+        while ($cr !== NULL && $cr->getName() != "Presenter" && $cr->getName() != "Nette\\Application\\UI\\Presenter") {
             $methods = array();
             foreach ($interestedMethods as $methodName => $scope) {
                 if ($scope & self::PARENTS && $cr->hasMethod($methodName)) {
@@ -221,13 +224,13 @@ class PresenterLinkPanel extends Object implements IBarPanel {
     }
 
     public static function getEditorLink($file, $line = 1) {
-        if ($file instanceof MethodReflection || $file instanceof ClassReflection) {
+        if ($file instanceof Reflection\Method || $file instanceof Reflection\ClassType) {
             $line = $file->getStartLine();
             $file = $file->getFileName();
         }
         $line = (int)$line;
 
-        return strtr(Debugger::$editor, array('%file' => $file, '%line' => $line));
+        return strtr(Diagnostics\Debugger::$editor, array('%file' => $file, '%line' => $line));
     }
 
 }
