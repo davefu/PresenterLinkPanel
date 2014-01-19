@@ -23,7 +23,7 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
     private $application;
     /** @var \Nette\Latte\Engine */
     private $latte;
-    /** @var string  */
+    /** @var string */
     private $appDir;
 
     public function __construct($appDir, Nette\Application\Application $application, Engine $latte) {
@@ -82,7 +82,10 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         $template->interestedMethods = $this->getInterestedMethodReflections();
 
         $template->parentClasses = $this->getParentClasses();
-        $template->componentMethods = $this->getComponentMethods();
+
+        $componentMethods = $this->getComponentMethods();
+        $template->usedComponentMethods = $this->getUsedComponentMethods($componentMethods);
+        $template->unusedComponentMethods = $this->getUnusedComponentMethods($componentMethods);
 
         return $template->__toString();
     }
@@ -183,6 +186,22 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         }
 
         return $parents;
+    }
+
+    private function getUsedComponentMethods($componentMethods) {
+        return array_filter($componentMethods,
+            function ($var) {
+                return $var['isUsed'];
+            }
+        );
+    }
+
+    private function getUnusedComponentMethods($componentMethods) {
+        return array_filter($componentMethods,
+            function ($var) {
+                return !$var['isUsed'];
+            }
+        );
     }
 
     private function getComponentMethods() {
