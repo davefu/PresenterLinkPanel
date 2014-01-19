@@ -2,6 +2,7 @@
 
 /**
  * @author Daniel Robenek
+ * @author Jan Langer, improvements, update to latest Nette
  * @license MIT
  */
 

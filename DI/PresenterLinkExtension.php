@@ -1,7 +1,9 @@
 <?php
 /**
  * @author Jan Langer
+ * @license MIT
  */
+
 namespace PresenterLink\DI;
 
 use Nette;
