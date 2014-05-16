@@ -9,11 +9,15 @@
 namespace PresenterLink;
 
 use Nette\Diagnostics;
-use Nette\Latte\Engine;
+use Latte\Engine;
 use Nette\Reflection;
 use Nette\Templating;
 use Nette;
 use Nette\Utils\Html;
+
+if (!class_exists('Latte\Engine')) {
+    class_alias('Nette\Latte\Engine', 'Latte\Engine');
+}
 
 class Panel extends Nette\Object implements Diagnostics\IBarPanel {
 
