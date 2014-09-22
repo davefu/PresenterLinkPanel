@@ -8,18 +8,19 @@
 
 namespace PresenterLink;
 
-use Nette\Diagnostics;
 use Latte\Engine;
+use Nette;
+use Nette\Diagnostics;
 use Nette\Reflection;
 use Nette\Templating;
-use Nette;
 use Nette\Utils\Html;
 
 if (!class_exists('Latte\Engine')) {
     class_alias('Nette\Latte\Engine', 'Latte\Engine');
 }
 
-class Panel extends Nette\Object implements Diagnostics\IBarPanel {
+class Panel extends Nette\Object implements Diagnostics\IBarPanel
+{
 
     const ACTIVE = 1;
     const PARENTS = 2;
@@ -31,7 +32,8 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
     /** @var string */
     private $appDir;
 
-    public function __construct($appDir, Nette\Application\Application $application, Engine $latte) {
+    public function __construct($appDir, Nette\Application\Application $application, Engine $latte)
+    {
         $this->application = $application;
         $this->latte = $latte;
         $this->appDir = $appDir;
@@ -40,20 +42,23 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
     /**
      * @return Nette\Application\UI\Presenter
      */
-    private function getPresenter() {
+    private function getPresenter()
+    {
         return $this->application->getPresenter();
     }
 
-    public function getTab() {
+    public function getTab()
+    {
         return Html::el("span")
-                   ->add(
-                   Html::el("img")
-                       ->src("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAL+SURBVBgZBcFNaJtlAMDx//ORjzZbs7TJkmowbJcdZqr1oNavCiIIMraBh0IY7uZx8+OiVw9SQZgXp3gR3A5OtIigcxMcylyqVPADh0WNpO2bpk2bvm3e5P163sffT1hrATj/2drDwKXjR7JzwyhhGCVEScIoTlzgAOgBBugDO8DHwA0NAJDE8SMPVA7NvTpfAgAAwAuT/DBM8n3fVMMIDgLDf70BX//jPQtc1AAASRyXJ9ICgLU9Q0oItAClIZOS3JeRKClJKZitjnFPPjf54U/OOxIAwETRRE5DnMBBKHAj2AvA9cH1YWcEWwMDwOtX28wdy3F/MVXSAAAmiiYPpyVeAJ5vkFKgAaVAKlAIlIAEEGaf5r99fmm7jgYAMGFYzo8p3FHMMLBIaVESpBEoCQqLUoBVdPcD3r359z5wXgMAxGFYK0+kcH1LDGBBGYG0gAGFRVtJYsGkDHEYH/vi5cd3JQCACYNaJZ/BCy1CghICCUhAAADCgrUQBwEmDAyABnjuzetjWsl0JiUJjUFiAYsFDAIAAUgJkTEMvGEM7ANogDgIS7lcFinAD3xav/2Iu/4npakCTneHk0+d4dDhSW5f/4jfiwUek1uy67Rfm59/6z0NYMJgXOfSWBOxfONT8tLjxXMNPM9jfX2dZvMrVCrL2dOn0FrR6XTkysrK2+12uySeuHClCFw+Mz/7wvHsFs3vv2WhscDVT77kr1/vMF2pUK/X6XQ69Ho9OpubpI9Ut155qXF0aWnJ1SYMnwGeX7nb4k77Z2aq4wD0y6cYDG+xsLBAoVBgMBiwvb3N5fc/YHf8wW+Ac/l8PqNNFD10+umZsTcaj3Ltmkez2QSgtvs5a9KyuLhILpcDwPM8bJIwtXv7STjJxsaGr00UtTZ7Lldu3iXU0/TdAT98d4v6zAz1ep1ut8vq6iqZTIZarUa5XMYPo6PLy8t7juNsitnGpSJwEahhk6KK9qpToz9O3Fsp6kw6LYSA1qhEdnyCaVpYm9go8H3Hcbqe5539H/YvZvvl5HpaAAAAAElFTkSuQmCC")
+            ->add(
+                Html::el("img")
+                    ->src("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAL+SURBVBgZBcFNaJtlAMDx//ORjzZbs7TJkmowbJcdZqr1oNavCiIIMraBh0IY7uZx8+OiVw9SQZgXp3gR3A5OtIigcxMcylyqVPADh0WNpO2bpk2bvm3e5P163sffT1hrATj/2drDwKXjR7JzwyhhGCVEScIoTlzgAOgBBugDO8DHwA0NAJDE8SMPVA7NvTpfAgAAwAuT/DBM8n3fVMMIDgLDf70BX//jPQtc1AAASRyXJ9ICgLU9Q0oItAClIZOS3JeRKClJKZitjnFPPjf54U/OOxIAwETRRE5DnMBBKHAj2AvA9cH1YWcEWwMDwOtX28wdy3F/MVXSAAAmiiYPpyVeAJ5vkFKgAaVAKlAIlIAEEGaf5r99fmm7jgYAMGFYzo8p3FHMMLBIaVESpBEoCQqLUoBVdPcD3r359z5wXgMAxGFYK0+kcH1LDGBBGYG0gAGFRVtJYsGkDHEYH/vi5cd3JQCACYNaJZ/BCy1CghICCUhAAADCgrUQBwEmDAyABnjuzetjWsl0JiUJjUFiAYsFDAIAAUgJkTEMvGEM7ANogDgIS7lcFinAD3xav/2Iu/4npakCTneHk0+d4dDhSW5f/4jfiwUek1uy67Rfm59/6z0NYMJgXOfSWBOxfONT8tLjxXMNPM9jfX2dZvMrVCrL2dOn0FrR6XTkysrK2+12uySeuHClCFw+Mz/7wvHsFs3vv2WhscDVT77kr1/vMF2pUK/X6XQ69Ho9OpubpI9Ut155qXF0aWnJ1SYMnwGeX7nb4k77Z2aq4wD0y6cYDG+xsLBAoVBgMBiwvb3N5fc/YHf8wW+Ac/l8PqNNFD10+umZsTcaj3Ltmkez2QSgtvs5a9KyuLhILpcDwPM8bJIwtXv7STjJxsaGr00UtTZ7Lldu3iXU0/TdAT98d4v6zAz1ep1ut8vq6iqZTIZarUa5XMYPo6PLy8t7juNsitnGpSJwEahhk6KK9qpToz9O3Fsp6kw6LYSA1qhEdnyCaVpYm9go8H3Hcbqe5539H/YvZvvl5HpaAAAAAElFTkSuQmCC")
             );
     }
 
 
-    public function getPanel() {
+    public function getPanel()
+    {
         $template = new Templating\FileTemplate(dirname(__FILE__) . '/template/template.latte');
         $template->registerFilter($this->latte);
         $template->registerHelper("editorLink", callback(__CLASS__, "getEditorLink"));
@@ -78,7 +83,8 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         return $template->__toString();
     }
 
-    protected function getInterestedMethodNames() {
+    protected function getInterestedMethodNames()
+    {
         return array(
             "startup" => self::BOTH,
             $this->getActionMethodName() => self::BOTH,
@@ -91,7 +97,8 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         );
     }
 
-    private function getTemplateFileName() {
+    private function getTemplateFileName()
+    {
         $template = $this->getPresenter()->getTemplate();
         $templateFile = $template->getFile();
         if ($template instanceof Templating\IFileTemplate && !$template->getFile()) {
@@ -102,16 +109,19 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
                     break;
                 }
             }
-            if (!$templateFile)
+            if (!$templateFile) {
                 $templateFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
+            }
         }
-        if ($templateFile !== NULL)
+        if ($templateFile !== NULL) {
             $templateFile = realpath($templateFile);
+        }
 
         return $templateFile;
     }
 
-    private function getLayoutFileName() {
+    private function getLayoutFileName()
+    {
         $layoutFile = $this->getPresenter()->getLayout();
         if ($layoutFile === NULL) {
             $files = $this->getPresenter()->formatLayoutTemplateFiles();
@@ -121,39 +131,46 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
                     break;
                 }
             }
-            if (!$layoutFile)
+            if (!$layoutFile) {
                 $layoutFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
+            }
         }
-        if ($layoutFile !== NULL)
+        if ($layoutFile !== NULL) {
             $layoutFile = realpath($layoutFile);
+        }
 
         return $layoutFile;
     }
 
-    private function getActionMethodName() {
+    private function getActionMethodName()
+    {
         return "action" . ucfirst($this->getPresenter()->getAction(FALSE));
     }
 
-    private function getRenderMethodName() {
+    private function getRenderMethodName()
+    {
         return "render" . ucfirst($this->getPresenter()->getAction(FALSE));
     }
 
-    private function getInterestedMethodReflections() {
+    private function getInterestedMethodReflections()
+    {
         $interestedMethods = $this->getInterestedMethodNames();
         $cr = $this->getPresenter()->getReflection();
         $methods = array();
         foreach ($interestedMethods as $methodName => $scope) {
             if ($scope & self::ACTIVE && $cr->hasMethod($methodName)) {
                 $method = $cr->getMethod($methodName);
-                if ($method->getDeclaringClass()->getName() == $cr->getName())
+                if ($method->getDeclaringClass()->getName() == $cr->getName()) {
                     $methods[] = $method;
+                }
             }
         }
 
         return $methods;
     }
 
-    private function getParentClasses() {
+    private function getParentClasses()
+    {
         $interestedMethods = $this->getInterestedMethodNames();
         $parents = array();
         $cr = $this->getPresenter()->getReflection()->getParentClass();
@@ -162,8 +179,9 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
             foreach ($interestedMethods as $methodName => $scope) {
                 if ($scope & self::PARENTS && $cr->hasMethod($methodName)) {
                     $method = $cr->getMethod($methodName);
-                    if ($method->getDeclaringClass()->getName() == $cr->getName())
+                    if ($method->getDeclaringClass()->getName() == $cr->getName()) {
                         $methods[] = $method;
+                    }
                 }
             }
             $parents[] = array(
@@ -176,23 +194,28 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         return $parents;
     }
 
-    private function getUsedComponentMethods($componentMethods) {
-        return array_filter($componentMethods,
+    private function getUsedComponentMethods($componentMethods)
+    {
+        return array_filter(
+            $componentMethods,
             function ($var) {
                 return $var['isUsed'];
             }
         );
     }
 
-    private function getUnusedComponentMethods($componentMethods) {
-        return array_filter($componentMethods,
+    private function getUnusedComponentMethods($componentMethods)
+    {
+        return array_filter(
+            $componentMethods,
             function ($var) {
                 return !$var['isUsed'];
             }
         );
     }
 
-    private function getComponentMethods() {
+    private function getComponentMethods()
+    {
         $components = (array)$this->getPresenter()->getComponents(FALSE);
         $methods = $this->getPresenter()->getReflection()->getMethods();
         $result = array();
@@ -208,23 +231,28 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel {
         return $result;
     }
 
-    private function getActionMethodReflection() {
+    private function getActionMethodReflection()
+    {
         $method = $this->getActionMethodName();
-        if ($this->getPresenter()->getReflection()->hasMethod($method))
+        if ($this->getPresenter()->getReflection()->hasMethod($method)) {
             return $this->getPresenter()->getReflection()->getMethod($method);
-        else
+        } else {
             return NULL;
+        }
     }
 
-    private function getRenderMethodReflection() {
+    private function getRenderMethodReflection()
+    {
         $method = $this->getRenderMethodName();
-        if ($this->getPresenter()->getReflection()->hasMethod($method))
+        if ($this->getPresenter()->getReflection()->hasMethod($method)) {
             return $this->getPresenter()->getReflection()->getMethod($method);
-        else
+        } else {
             return NULL;
+        }
     }
 
-    public static function getEditorLink($file, $line = 1) {
+    public static function getEditorLink($file, $line = 1)
+    {
         if ($file instanceof Reflection\Method || $file instanceof Reflection\ClassType) {
             $line = $file->getStartLine();
             $file = $file->getFileName();
