@@ -59,6 +59,9 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
 
     public function getPanel()
     {
+		if(!$this->getPresenter()) {
+			return "";
+		}
         $template = new Templating\FileTemplate(dirname(__FILE__) . '/template/template.latte');
         $template->registerFilter($this->latte);
         $template->registerHelper("editorLink", callback(__CLASS__, "getEditorLink"));
