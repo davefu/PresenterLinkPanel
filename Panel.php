@@ -8,18 +8,17 @@
 
 namespace PresenterLink;
 
-use Latte\Engine;
 use Nette;
-use Nette\Diagnostics;
-use Nette\Reflection;
-use Nette\Templating;
-use Nette\Utils\Html;
+use Nette\Application\UI\ITemplate;
+use Nette\Templating\IFileTemplate;
+use Tracy\Debugger;
+use Tracy\IBarPanel;
 
 if (!class_exists('Latte\Engine')) {
     class_alias('Nette\Latte\Engine', 'Latte\Engine');
 }
 
-class Panel extends Nette\Object implements Diagnostics\IBarPanel
+class Panel implements IBarPanel
 {
 
     const ACTIVE = 1;
@@ -27,15 +26,12 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
     const BOTH = 3;
     /** @var Nette\Application\Application */
     private $application;
-    /** @var \Nette\Latte\Engine */
-    private $latte;
     /** @var string */
     private $appDir;
 
-    public function __construct($appDir, Nette\Application\Application $application, Engine $latte)
+    public function __construct($appDir, Nette\Application\Application $application)
     {
         $this->application = $application;
-        $this->latte = $latte;
         $this->appDir = $appDir;
     }
 
@@ -49,11 +45,11 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
 
     public function getTab()
     {
-        return Html::el("span")
-            ->add(
-                Html::el("img")
-                    ->src("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAL+SURBVBgZBcFNaJtlAMDx//ORjzZbs7TJkmowbJcdZqr1oNavCiIIMraBh0IY7uZx8+OiVw9SQZgXp3gR3A5OtIigcxMcylyqVPADh0WNpO2bpk2bvm3e5P163sffT1hrATj/2drDwKXjR7JzwyhhGCVEScIoTlzgAOgBBugDO8DHwA0NAJDE8SMPVA7NvTpfAgAAwAuT/DBM8n3fVMMIDgLDf70BX//jPQtc1AAASRyXJ9ICgLU9Q0oItAClIZOS3JeRKClJKZitjnFPPjf54U/OOxIAwETRRE5DnMBBKHAj2AvA9cH1YWcEWwMDwOtX28wdy3F/MVXSAAAmiiYPpyVeAJ5vkFKgAaVAKlAIlIAEEGaf5r99fmm7jgYAMGFYzo8p3FHMMLBIaVESpBEoCQqLUoBVdPcD3r359z5wXgMAxGFYK0+kcH1LDGBBGYG0gAGFRVtJYsGkDHEYH/vi5cd3JQCACYNaJZ/BCy1CghICCUhAAADCgrUQBwEmDAyABnjuzetjWsl0JiUJjUFiAYsFDAIAAUgJkTEMvGEM7ANogDgIS7lcFinAD3xav/2Iu/4npakCTneHk0+d4dDhSW5f/4jfiwUek1uy67Rfm59/6z0NYMJgXOfSWBOxfONT8tLjxXMNPM9jfX2dZvMrVCrL2dOn0FrR6XTkysrK2+12uySeuHClCFw+Mz/7wvHsFs3vv2WhscDVT77kr1/vMF2pUK/X6XQ69Ho9OpubpI9Ut155qXF0aWnJ1SYMnwGeX7nb4k77Z2aq4wD0y6cYDG+xsLBAoVBgMBiwvb3N5fc/YHf8wW+Ac/l8PqNNFD10+umZsTcaj3Ltmkez2QSgtvs5a9KyuLhILpcDwPM8bJIwtXv7STjJxsaGr00UtTZ7Lldu3iXU0/TdAT98d4v6zAz1ep1ut8vq6iqZTIZarUa5XMYPo6PLy8t7juNsitnGpSJwEahhk6KK9qpToz9O3Fsp6kw6LYSA1qhEdnyCaVpYm9go8H3Hcbqe5539H/YvZvvl5HpaAAAAAElFTkSuQmCC")
-            );
+        return
+		'<span><svg x="0px" y="0px" width="405.24px" height="405.24px" viewBox="0 0 405.24 405.24" style="" xml:space="preserve">'
+		.'<path fill="#336699" d="M249.037,330.626H28.283V86.909h335.623v181.629l28.283,28.283V26.195c0-12.996-10.573-23.569-23.568-23.569H23.568 C10.573,2.626,0,13.199,0,26.195v309.146c0,12.995,10.573,23.568,23.568,23.568h238.911 C249.37,340.274,249.037,330.626,249.037,330.626z M338.026,42.202c0-4.806,3.896-8.702,8.702-8.702h8.701 c4.807,0,8.702,3.896,8.702,8.702v9.863c0,4.806-3.896,8.702-8.702,8.702h-8.701c-4.808,0-8.702-3.896-8.702-8.702V42.202z M297.561,42.202c0-4.806,3.896-8.702,8.701-8.702h8.703c4.808,0,8.702,3.896,8.702,8.702v9.863c0,4.806-3.896,8.702-8.702,8.702 h-8.703c-4.806,0-8.701-3.896-8.701-8.702V42.202z M257.095,42.202c0-4.806,3.897-8.702,8.702-8.702h8.702 c4.807,0,8.703,3.896,8.703,8.702v9.863c0,4.806-3.896,8.702-8.703,8.702h-8.702c-4.805,0-8.702-3.896-8.702-8.702V42.202z"/>'
+		.'<path fill="#009933" d="M392.606,322.19l-41.165-41.166c-9.292-9.291-21.797-13.446-33.972-12.487c0.958-12.175-3.196-24.679-12.487-33.972 l-41.165-41.165c-16.848-16.846-44.256-16.845-61.103,0l-6.689,6.688c-16.846,16.845-16.846,44.255,0,61.102l41.166,41.164 c9.293,9.293,21.797,13.446,33.971,12.489c-0.958,12.174,3.197,24.679,12.489,33.972l41.165,41.164 c16.845,16.846,44.255,16.846,61.101,0l6.688-6.688C409.452,366.445,409.452,339.035,392.606,322.19z M262.267,274.187 l17.062,17.063c-8.687,5.173-20.118,4.027-27.586-3.439l-41.166-41.166c-8.824-8.822-8.824-23.182,0-32.006l6.688-6.688c8.823-8.824,23.182-8.824,32.004,0l41.166,41.165c7.47,7.469,8.613,18.898,3.439,27.587l-17.062-17.063 c-4.019-4.018-10.53-4.018-14.548,0C258.248,263.656,258.248,270.169,262.267,274.187z M378.058,368.743l-6.688,6.688 c-8.824,8.824-23.181,8.824-32.005,0.001L298.2,334.267c-7.468-7.469-8.614-18.898-3.44-27.586l17.063,17.062 c4.018,4.019,10.529,4.019,14.548,0c4.017-4.018,4.017-10.53,0-14.548l-17.063-17.063c8.688-5.174,20.118-4.027,27.589,3.44 l41.164,41.165C386.882,345.562,386.882,359.919,378.058,368.743z"/>'
+		.'</svg></span>';
     }
 
 
@@ -62,28 +58,34 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
 		if(!$this->getPresenter()) {
 			return "";
 		}
-        $template = new Templating\FileTemplate(dirname(__FILE__) . '/template/template.latte');
-        $template->registerFilter($this->latte);
-        $template->registerHelper("editorLink", callback(__CLASS__, "getEditorLink"));
-        $template->registerHelper("substr", "substr");
-        $template->registerHelperLoader('Nette\\Templating\\Helpers::loader');
-
-        $template->presenterClass = $this->getPresenter()->getReflection();
-        $template->actionName = $this->getPresenter()->getAction(TRUE);
-        $template->templateFileName = $this->getTemplateFileName();
-        $template->layoutFileName = $this->getLayoutFileName();
-        $template->appDirPathLength = strlen(realpath($this->appDir));
 
 
-        $template->interestedMethods = $this->getInterestedMethodReflections();
+		$componentMethods = $this->getComponentMethods();
+		
+		$parameters = [
+			'presenterClass' => $this->getPresenter()->getReflection(),
+			'actionName' => $this->getPresenter()->getAction(TRUE),
+			'templateFileName' => $this->getTemplateFileName(),
+			'layoutFileName' => $this->getLayoutFileName(),
+			'appDirPathLength' => strlen(realpath($this->appDir)),
+			'interestedMethods' => $this->getInterestedMethodReflections(),
+			'parentClasses' => $this->getParentClasses(),
+			'usedComponentMethods' => $this->getUsedComponentMethods($componentMethods),
+			'unusedComponentMethods' => $this->getUnusedComponentMethods($componentMethods),
+			'editorLink' => function($file, $line = 1) {
+				return self::getEditorLink($file, $line);
+			}
+		];
 
-        $template->parentClasses = $this->getParentClasses();
+		$template = function() use ($parameters) {
+			extract($parameters);
 
-        $componentMethods = $this->getComponentMethods();
-        $template->usedComponentMethods = $this->getUsedComponentMethods($componentMethods);
-        $template->unusedComponentMethods = $this->getUnusedComponentMethods($componentMethods);
+			ob_start();
+			require_once __DIR__.'/template/template.phtml';
+			return ob_get_clean();
+		};
 
-        return $template->__toString();
+		return $template();
     }
 
     protected function getInterestedMethodNames()
@@ -104,7 +106,7 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
     {
         $template = $this->getPresenter()->getTemplate();
         $templateFile = $template->getFile();
-        if ($template instanceof Templating\IFileTemplate && !$template->getFile()) {
+        if (($template instanceof ITemplate || $template instanceof IFileTemplate) && !$template->getFile()) {
             $files = $this->getPresenter()->formatTemplateFiles();
             foreach ($files as $file) {
                 if (is_file($file)) {
@@ -234,35 +236,15 @@ class Panel extends Nette\Object implements Diagnostics\IBarPanel
         return $result;
     }
 
-    private function getActionMethodReflection()
-    {
-        $method = $this->getActionMethodName();
-        if ($this->getPresenter()->getReflection()->hasMethod($method)) {
-            return $this->getPresenter()->getReflection()->getMethod($method);
-        } else {
-            return NULL;
-        }
-    }
-
-    private function getRenderMethodReflection()
-    {
-        $method = $this->getRenderMethodName();
-        if ($this->getPresenter()->getReflection()->hasMethod($method)) {
-            return $this->getPresenter()->getReflection()->getMethod($method);
-        } else {
-            return NULL;
-        }
-    }
-
     public static function getEditorLink($file, $line = 1)
     {
-        if ($file instanceof Reflection\Method || $file instanceof Reflection\ClassType) {
+        if ($file instanceof \ReflectionMethod || $file instanceof \ReflectionClass) {
             $line = $file->getStartLine();
             $file = $file->getFileName();
         }
         $line = (int)$line;
 
-        return strtr(Diagnostics\Debugger::$editor, array('%file' => $file, '%line' => $line));
+        return strtr(Debugger::$editor, array('%file' => $file, '%line' => $line));
     }
 
 }
