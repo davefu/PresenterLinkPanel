@@ -14,10 +14,6 @@ use Nette\Templating\IFileTemplate;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
-if (!class_exists('Latte\Engine')) {
-    class_alias('Nette\Latte\Engine', 'Latte\Engine');
-}
-
 class Panel implements IBarPanel
 {
 
