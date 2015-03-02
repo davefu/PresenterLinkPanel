@@ -11,22 +11,23 @@ use Nette\DI;
 
 class PresenterLinkExtension extends DI\CompilerExtension
 {
-    public function afterCompile(Nette\PhpGenerator\ClassType $class)
-    {
+	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+	{
 
-        $container = $this->getContainerBuilder();
+		$container = $this->getContainerBuilder();
 
-        if ($container->parameters['debugMode']) {
-            $initialize = $class->methods['initialize'];
+		if ($container->parameters['debugMode']) {
+			$initialize = $class->methods['initialize'];
 
-            $initialize->addBody(
-                $container->formatPhp(
-                    'Tracy\Debugger::' . (method_exists('Tracy\Debugger', 'getBar') ? 'getBar()' : '$bar') . '->addPanel(?, "presenter-link-panel");',
-                    Nette\DI\Compiler::filterArguments(array(new DI\Statement('PresenterLink\Panel', ['appDir' => $container->parameters['appDir'],])))
-                )
-            );
-        }
-    }
+			$initialize->addBody(
+				$container->formatPhp(
+					'Tracy\Debugger::getBar()->addPanel(?, "presenter-link-panel");',
+					Nette\DI\Compiler::filterArguments([
+						new DI\Statement('PresenterLink\Panel', ['appDir' => $container->parameters['appDir'],])
+					])
+				)
+			);
+		}
+	}
 
-
-} 
+}

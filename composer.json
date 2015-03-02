@@ -1,33 +1,33 @@
 {
-    "name": "quinix/presenter-link-panel",
-    "description": "This panel generates links to open current presenter/template into your preferred text editor. (Author: Daniel Robenek)",
-    "keywords": [
-        "nette",
-        "debugging",
-        "presenter",
-        "component"
-    ],
-    "license": ["MIT"],
-    "support": {
-        "issues": "https://github.com/janlanger/PresenterLinkPanel/issues"
+  "name": "quinix/presenter-link-panel",
+  "description": "This panel generates links to open current presenter/template into your preferred text editor. (Author: Daniel Robenek)",
+  "keywords": [
+    "nette",
+    "debugging",
+    "presenter",
+    "component"
+  ],
+  "license": ["MIT"],
+  "support": {
+    "issues": "https://github.com/janlanger/PresenterLinkPanel/issues"
+  },
+  "authors": [
+    {
+      "name": "Daniel Robenek"
     },
-    "authors": [
-        {
-            "name": "Daniel Robenek"
-        },
-        {
-            "name": "Radek Simko"
-        },
-        {
-            "name": "Jan Langer"
-        }
-    ],
-    "require": {
-        "php": ">= 5.4.0",
-        "nette/application": "~2.2",
-      "nette/di": "~2.2"
+    {
+      "name": "Radek Simko"
     },
-    "autoload": {
-        "psr-4": {"PresenterLink\\": "./"}
+    {
+      "name": "Jan Langer"
     }
+  ],
+  "require": {
+    "php": ">= 5.4.0",
+    "nette/application": "~2.2",
+    "nette/di": "~2.2"
+  },
+  "autoload": {
+    "psr-4": {"PresenterLink\\": "./"}
+  }
 }
