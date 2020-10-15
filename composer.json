@@ -1,5 +1,5 @@
 {
-  "name": "quinix/presenter-link-panel",
+  "name": "davefu/presenter-link-panel",
   "description": "This panel generates links to open current presenter/template into your preferred text editor. (Author: Daniel Robenek)",
   "keywords": [
     "nette",
@@ -9,7 +9,7 @@
   ],
   "license": ["MIT"],
   "support": {
-    "issues": "https://github.com/janlanger/PresenterLinkPanel/issues"
+    "issues": "https://github.com/davefu/PresenterLinkPanel/issues"
   },
   "authors": [
     {
