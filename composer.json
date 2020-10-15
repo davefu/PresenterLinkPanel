@@ -25,7 +25,8 @@
   "require": {
     "php": ">= 5.4.0",
     "nette/application": "~2.2",
-    "nette/di": "~2.2"
+    "nette/di": "~2.2",
+    "tracy/tracy": "~2.2"
   },
   "autoload": {
     "psr-4": {"PresenterLink\\": "./"}

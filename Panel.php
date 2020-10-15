@@ -10,7 +10,6 @@ namespace PresenterLink;
 
 use Nette;
 use Nette\Application\UI\ITemplate;
-use Nette\Templating\IFileTemplate;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
@@ -103,7 +102,8 @@ class Panel implements IBarPanel
 	{
 		$template = $this->getPresenter()->getTemplate();
 		$templateFile = $template->getFile();
-		if (($template instanceof ITemplate || $template instanceof IFileTemplate) && !$template->getFile()) {
+		$isDeprecatedFileTemplate = interface_exists('Nette\Templating\IFileTemplate') && $template instanceof Nette\Templating\IFileTemplate;
+		if (($template instanceof ITemplate || $isDeprecatedFileTemplate) && !$template->getFile()) {
 			$files = $this->getPresenter()->formatTemplateFiles();
 			foreach ($files as $file) {
 				if (is_file($file)) {

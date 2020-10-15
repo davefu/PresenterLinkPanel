@@ -6,14 +6,14 @@ namespace PresenterLink;
 		background-color: inherit;
 		display: inline
 	}</style>
-<h1>Presenter <a href="<?php echo $editorLink($presenterClass); ?>"><?php echo $presenterClass->name; ?></a></h1>
+<h1>Presenter <a href="<?php echo $editorLink($presenterClass); ?>"><?php echo $presenterClass->getName(); ?></a></h1>
 <div id="presenter-link-panel">
 
 	<p>
 		Current action: <code><?php echo $actionName; ?></code>
 		<br>
 		Presenter file: <a href="<?php echo $editorLink($presenterClass); ?>"
-						   class="presenterlink-code"><code><?php echo substr($presenterClass->fileName, $appDirPathLength) ?></code></a>
+						   class="presenterlink-code"><code><?php echo substr($presenterClass->getFileName(), $appDirPathLength) ?></code></a>
 		<br>
 		Template file: <a
 			href="<?php echo $editorLink($templateFileName); ?>"><code><?php echo substr($templateFileName, $appDirPathLength); ?></code></a>
@@ -25,8 +25,8 @@ namespace PresenterLink;
 	<p>
 		<?php foreach ($interestedMethods as $method) { ?>
 			Method
-			<a href="<?php echo $editorLink($method); ?>"><code><?php echo $method->name ?></code></a>
-			<?php echo "[{$method->startLine}-{$method->endLine}]"; ?>
+			<a href="<?php echo $editorLink($method); ?>"><code><?php echo $method->getName() ?></code></a>
+			<?php echo "[{$method->getStartLine()}-{$method->getEndLine()}]"; ?>
 			<br>
 		<?php } ?>
 	</p>
@@ -37,11 +37,11 @@ namespace PresenterLink;
 	<ul style="margin-left: 25px;">
 		<?php foreach ($parentClasses as $class) { ?>
 			<li>
-				<a href="<?php echo $editorLink($class["reflection"]); ?>"><code><?php echo $class["reflection"]->name; ?></code></a>
+				<a href="<?php echo $editorLink($class["reflection"]); ?>"><code><?php echo $class["reflection"]->getName(); ?></code></a>
 				<?php if (count($class["methods"]) > 0) { ?>
 					<span style="font-size: 80%;">(
 						<?php foreach ($class["methods"] as $method) { ?>
-							<a href="<?php echo $editorLink($method); ?>"><?php echo $method->name; ?></a>
+							<a href="<?php echo $editorLink($method); ?>"><?php echo $method->getName(); ?></a>
 						<?php } ?>
 						)</span>
 				<?php } ?>
@@ -56,7 +56,7 @@ namespace PresenterLink;
 	<ul style="margin-left: 25px;">
 		<?php foreach ($usedComponentMethods as $method): ?>
 			<li>
-				<a href="<?php echo $editorLink($method['method']); ?>"><code><?php echo substr($method['method']->name, 15); ?></code></a>
+				<a href="<?php echo $editorLink($method['method']); ?>"><code><?php echo substr($method['method']->getName(), 15); ?></code></a>
 			</li>
 		<?php endforeach; ?>
 	</ul>
@@ -68,7 +68,7 @@ namespace PresenterLink;
 	<ul style="margin-left: 25px;">
 		<?php foreach ($unusedComponentMethods as $method): ?>
 			<li>
-				<a href="<?php echo $editorLink($method['method']); ?>"><code><?php echo substr($method['method']->name, 15); ?></code></a>
+				<a href="<?php echo $editorLink($method['method']); ?>"><code><?php echo substr($method['method']->getName(), 15); ?></code></a>
 			</li>
 		<?php endforeach; ?>
 	</ul>
