@@ -224,7 +224,7 @@ class Panel implements IBarPanel
 		foreach ($methods as $method) {
 			if (strpos($method->getName(), "createComponent") === 0 && strlen($method->getName()) > 15) {
 				$componentName = substr($method->getName(), 15);
-				$componentName{0} = strtolower($componentName{0});
+				$componentName[0] = strtolower($componentName[0]);
 				$isUsed = isset($components[$componentName]);
 				$result[] = array("method" => $method, "isUsed" => $isUsed);
 			}
