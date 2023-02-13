@@ -9,39 +9,32 @@
 namespace PresenterLink;
 
 use Nette;
+use Nette\Application\Application;
 use Nette\Application\UI\ITemplate;
+use Nette\Application\UI\Presenter;
+use ReflectionClass;
+use ReflectionMethod;
 use Tracy\Debugger;
 use Tracy\IBarPanel;
 
-class Panel implements IBarPanel
-{
+class Panel implements IBarPanel {
 
 	const ACTIVE = 1;
 	const PARENTS = 2;
 	const BOTH = 3;
 
-	/** @var Nette\Application\Application */
+	/** @var Application */
 	private $application;
 
 	/** @var string */
 	private $appDir;
 
-	public function __construct($appDir, Nette\Application\Application $application)
-	{
+	public function __construct(string $appDir, Application $application) {
 		$this->application = $application;
 		$this->appDir = $appDir;
 	}
 
-	/**
-	 * @return Nette\Application\UI\Presenter
-	 */
-	private function getPresenter()
-	{
-		return $this->application->getPresenter();
-	}
-
-	public function getTab()
-	{
+	public function getTab(): string {
 		return
 			'<span><svg x="0px" y="0px" width="405.24px" height="405.24px" viewBox="0 0 405.24 405.24" style="" xml:space="preserve">'
 			. '<path fill="#336699" d="M249.037,330.626H28.283V86.909h335.623v181.629l28.283,28.283V26.195c0-12.996-10.573-23.569-23.568-23.569H23.568 C10.573,2.626,0,13.199,0,26.195v309.146c0,12.995,10.573,23.568,23.568,23.568h238.911 C249.37,340.274,249.037,330.626,249.037,330.626z M338.026,42.202c0-4.806,3.896-8.702,8.702-8.702h8.701 c4.807,0,8.702,3.896,8.702,8.702v9.863c0,4.806-3.896,8.702-8.702,8.702h-8.701c-4.808,0-8.702-3.896-8.702-8.702V42.202z M297.561,42.202c0-4.806,3.896-8.702,8.701-8.702h8.703c4.808,0,8.702,3.896,8.702,8.702v9.863c0,4.806-3.896,8.702-8.702,8.702 h-8.703c-4.806,0-8.701-3.896-8.701-8.702V42.202z M257.095,42.202c0-4.806,3.897-8.702,8.702-8.702h8.702 c4.807,0,8.703,3.896,8.703,8.702v9.863c0,4.806-3.896,8.702-8.703,8.702h-8.702c-4.805,0-8.702-3.896-8.702-8.702V42.202z"/>'
@@ -49,17 +42,16 @@ class Panel implements IBarPanel
 			. '</svg></span>';
 	}
 
-	public function getPanel()
-	{
+	public function getPanel(): string {
 		if (!$this->getPresenter()) {
-			return "";
+			return '';
 		}
 
 		$componentMethods = $this->getComponentMethods();
 
 		$parameters = [
 			'presenterClass' => $this->getPresenter()->getReflection(),
-			'actionName' => $this->getPresenter()->getAction(TRUE),
+			'actionName' => $this->getPresenter()->getAction(true),
 			'templateFileName' => $this->getTemplateFileName(),
 			'layoutFileName' => $this->getLayoutFileName(),
 			'appDirPathLength' => strlen(realpath($this->appDir)),
@@ -84,22 +76,26 @@ class Panel implements IBarPanel
 		return $template();
 	}
 
-	protected function getInterestedMethodNames()
-	{
-		return array(
-			"startup" => self::BOTH,
+	protected function getInterestedMethodNames(): array {
+		return [
+			'startup' => self::BOTH,
 			$this->getActionMethodName() => self::BOTH,
 			$this->getRenderMethodName() => self::BOTH,
-			"beforeRender" => self::BOTH,
-			"afterRender" => self::BOTH,
-			"shutdown" => self::BOTH,
-			"formatLayoutTemplateFiles" => self::BOTH,
-			"formatTemplateFiles" => self::BOTH,
-		);
+			'beforeRender' => self::BOTH,
+			'afterRender' => self::BOTH,
+			'shutdown' => self::BOTH,
+			'formatLayoutTemplateFiles' => self::BOTH,
+			'formatTemplateFiles' => self::BOTH,
+		];
 	}
 
-	private function getTemplateFileName()
-	{
+	private function getPresenter(): ?Presenter {
+		/** @var Presenter|null $presenter */
+		$presenter = $this->application->getPresenter();
+		return $presenter;
+	}
+
+	private function getTemplateFileName(): string {
 		$template = $this->getPresenter()->getTemplate();
 		$templateFile = $template->getFile();
 		$isDeprecatedFileTemplate = interface_exists('Nette\Templating\IFileTemplate') && $template instanceof Nette\Templating\IFileTemplate;
@@ -115,17 +111,17 @@ class Panel implements IBarPanel
 				$templateFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
 			}
 		}
-		if ($templateFile !== NULL) {
+		if ($templateFile !== null) {
 			$templateFile = realpath($templateFile);
 		}
 
 		return $templateFile;
 	}
 
-	private function getLayoutFileName()
-	{
+	private function getLayoutFileName(): string {
 		$layoutFile = $this->getPresenter()->getLayout();
-		if ($layoutFile === NULL) {
+		if (!is_string($layoutFile) || $layoutFile === '') {
+			/** @var string[] $files */
 			$files = $this->getPresenter()->formatLayoutTemplateFiles();
 			foreach ($files as $file) {
 				if (is_file($file)) {
@@ -137,28 +133,28 @@ class Panel implements IBarPanel
 				$layoutFile = str_replace($this->appDir, "\xE2\x80\xA6", reset($files));
 			}
 		}
-		if ($layoutFile !== NULL) {
+		if (is_string($layoutFile)) {
 			$layoutFile = realpath($layoutFile);
 		}
 
 		return $layoutFile;
 	}
 
-	private function getActionMethodName()
-	{
-		return "action" . ucfirst($this->getPresenter()->getAction(FALSE));
+	private function getActionMethodName(): string {
+		return 'action' . ucfirst($this->getPresenter()->getAction(false));
 	}
 
-	private function getRenderMethodName()
-	{
-		return "render" . ucfirst($this->getPresenter()->getAction(FALSE));
+	private function getRenderMethodName(): string {
+		return 'render' . ucfirst($this->getPresenter()->getAction(false));
 	}
 
-	private function getInterestedMethodReflections()
-	{
+	/**
+	 * @return ReflectionMethod[]
+	 */
+	private function getInterestedMethodReflections(): array {
 		$interestedMethods = $this->getInterestedMethodNames();
 		$cr = $this->getPresenter()->getReflection();
-		$methods = array();
+		$methods = [];
 		foreach ($interestedMethods as $methodName => $scope) {
 			if ($scope & self::ACTIVE && $cr->hasMethod($methodName)) {
 				$method = $cr->getMethod($methodName);
@@ -171,13 +167,12 @@ class Panel implements IBarPanel
 		return $methods;
 	}
 
-	private function getParentClasses()
-	{
+	private function getParentClasses(): array {
 		$interestedMethods = $this->getInterestedMethodNames();
-		$parents = array();
+		$parents = [];
 		$cr = $this->getPresenter()->getReflection()->getParentClass();
-		while ($cr !== NULL && $cr->getName() != "Presenter" && $cr->getName() != "Nette\\Application\\UI\\Presenter") {
-			$methods = array();
+		while ($cr !== null && $cr->getName() != 'Presenter' && $cr->getName() != "Nette\\Application\\UI\\Presenter") {
+			$methods = [];
 			foreach ($interestedMethods as $methodName => $scope) {
 				if ($scope & self::PARENTS && $cr->hasMethod($methodName)) {
 					$method = $cr->getMethod($methodName);
@@ -186,18 +181,20 @@ class Panel implements IBarPanel
 					}
 				}
 			}
-			$parents[] = array(
-				"reflection" => $cr,
-				"methods" => $methods,
-			);
+			$parents[] = [
+				'reflection' => $cr,
+				'methods' => $methods,
+			];
 			$cr = $cr->getParentClass();
 		}
 
 		return $parents;
 	}
 
-	private function getUsedComponentMethods($componentMethods)
-	{
+	/**
+	 * @param ReflectionMethod[] $componentMethods
+	 */
+	private function getUsedComponentMethods(array $componentMethods): array {
 		return array_filter(
 			$componentMethods,
 			function ($var) {
@@ -206,8 +203,10 @@ class Panel implements IBarPanel
 		);
 	}
 
-	private function getUnusedComponentMethods($componentMethods)
-	{
+	/**
+	 * @param ReflectionMethod[] $componentMethods
+	 */
+	private function getUnusedComponentMethods(array $componentMethods): array {
 		return array_filter(
 			$componentMethods,
 			function ($var) {
@@ -216,32 +215,34 @@ class Panel implements IBarPanel
 		);
 	}
 
-	private function getComponentMethods()
-	{
-		$components = (array)$this->getPresenter()->getComponents(FALSE);
+	private function getComponentMethods(): array {
+		$components = (array)$this->getPresenter()->getComponents(false);
 		$methods = $this->getPresenter()->getReflection()->getMethods();
 		$result = array();
 		foreach ($methods as $method) {
-			if (strpos($method->getName(), "createComponent") === 0 && strlen($method->getName()) > 15) {
+			if (strpos($method->getName(), 'createComponent') === 0 && strlen($method->getName()) > 15) {
 				$componentName = substr($method->getName(), 15);
 				$componentName[0] = strtolower($componentName[0]);
 				$isUsed = isset($components[$componentName]);
-				$result[] = array("method" => $method, "isUsed" => $isUsed);
+				$result[] = ['method' => $method, 'isUsed' => $isUsed];
 			}
 		}
 
 		return $result;
 	}
 
-	public static function getEditorLink($file, $line = 1)
-	{
-		if ($file instanceof \ReflectionMethod || $file instanceof \ReflectionClass) {
+	/**
+	 * @param string|ReflectionMethod|ReflectionClass $file
+	 * @param int $line
+	 */
+	public static function getEditorLink($file, int $line = 1): string {
+		if ($file instanceof ReflectionMethod || $file instanceof ReflectionClass) {
 			$line = $file->getStartLine();
 			$file = $file->getFileName();
 		}
 		$line = (int)$line;
 
-		return strtr(Debugger::$editor, array('%file' => $file, '%line' => $line));
+		return strtr(Debugger::$editor, ['%file' => $file, '%line' => $line]);
 	}
 
 }

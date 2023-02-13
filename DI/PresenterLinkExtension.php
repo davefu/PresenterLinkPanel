@@ -6,12 +6,15 @@
 
 namespace PresenterLink\DI;
 
-use Nette;
-use Nette\DI;
+use Nette\DI\CompilerExtension;
+use Nette\DI\Definitions\Statement;
+use Nette\DI\Helpers;
+use Nette\DI\PhpGenerator;
+use Nette\PhpGenerator\ClassType;
 
-class PresenterLinkExtension extends DI\CompilerExtension
+class PresenterLinkExtension extends CompilerExtension
 {
-	public function afterCompile(Nette\PhpGenerator\ClassType $class)
+	public function afterCompile(ClassType $class)
 	{
 
 		$container = $this->getContainerBuilder();
@@ -19,11 +22,12 @@ class PresenterLinkExtension extends DI\CompilerExtension
 		if ($container->parameters['debugMode']) {
 			$initialize = $class->methods['initialize'];
 
+			$generator = new PhpGenerator($container);
 			$initialize->addBody(
-				$container->formatPhp(
+				$generator->formatPhp(
 					'Tracy\Debugger::getBar()->addPanel(?, "presenter-link-panel");',
-					Nette\DI\Compiler::filterArguments([
-						new DI\Statement('PresenterLink\Panel', ['appDir' => $container->parameters['appDir'],])
+					Helpers::filterArguments([
+						new Statement('PresenterLink\Panel', ['appDir' => $container->parameters['appDir'],])
 					])
 				)
 			);
