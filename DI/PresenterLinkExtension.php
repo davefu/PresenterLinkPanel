@@ -27,7 +27,7 @@ class PresenterLinkExtension extends CompilerExtension
 				$generator->formatPhp(
 					'Tracy\Debugger::getBar()->addPanel(?, "presenter-link-panel");',
 					Helpers::filterArguments([
-						new Statement('PresenterLink\Panel', ['appDir' => $container->parameters['appDir'],])
+						new Statement('PresenterLink\Panel', [$container->parameters['appDir'], '@application'])
 					])
 				)
 			);
