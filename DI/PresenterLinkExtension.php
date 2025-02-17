@@ -20,7 +20,7 @@ class PresenterLinkExtension extends CompilerExtension
 		$container = $this->getContainerBuilder();
 
 		if ($container->parameters['debugMode']) {
-			$initialize = $class->methods['initialize'];
+			$initialize = $class->getMethod('initialize');
 
 			$generator = new PhpGenerator($container);
 			$initialize->addBody(
